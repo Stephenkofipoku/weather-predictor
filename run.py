@@ -3,6 +3,8 @@ from google.oauth2.service_account import Credentials
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import base64
+from io import BytesIO
 
 # Set up credentials and authorize the Google Sheets API
 
@@ -51,4 +53,17 @@ plt.title('Temperature Distribution')
 plt.xlabel('Temperature (C)')
 plt.ylabel('Count')
 plt.show()
+
+# Convert the plot to a base64-encoded image
+buffer = BytesIO()
+plt.savefig(buffer, format='png')
+buffer.seek(0)
+image_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+# Insert the image into the Google Spreadsheet
+analyzed_sheet = SHEET.worksheet('analyzed')
+analyzed_sheet.update([[f'=IMAGE("data:image/png;base64,{image_base64}", 1)']], 'A1')
+
+plt.close()
+
 
