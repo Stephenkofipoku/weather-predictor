@@ -1,6 +1,8 @@
 import gspread
 from google.oauth2.service_account import Credentials
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Set up credentials and authorize the Google Sheets API
 
@@ -36,5 +38,17 @@ df['Precip Type'] = df['Precip Type'].astype('category')
 columns_to_drop = ['Loud Cover', 'Daily Summary']
 df = df.drop(columns_to_drop, axis=1)
 
-# Display the cleaned dataset
-print(df.head())
+"""
+Exporatory Data Analysis (EDA) on the dataset and gain insights into the patterns and relationships between variables.
+Using libraries Matplotlib and Seaborn to create visualizations.
+Visualize the distribution of temperature.
+Visualize the relationship between temperature and humidity
+Visualize the average temperature by month
+"""
+plt.figure(figsize=(8, 6))
+sns.histplot(data=df, x='Temperature (C)', bins=30)
+plt.title('Temperature Distribution')
+plt.xlabel('Temperature (C)')
+plt.ylabel('Count')
+plt.show()
+
