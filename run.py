@@ -1,6 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
-import Pandas as pd
+import pandas as pd
 
 # Set up credentials and authorize the Google Sheets API
 
@@ -22,5 +22,19 @@ weatherhistory = SHEET.worksheet('weatherhistory')
 data = weatherhistory.get_all_records()
 df = pd.DataFrame(data)
 
-# Display the first few rows of the dataset
+df = df.dropna()
+"""
+Handle missing values.
+Remove rows with any missing values
+"""
+
+# Convert data types if necessary
+df['Temperature (C)'] = pd.to_numeric(df['Temperature (C)'])
+df['Precip Type'] = df['Precip Type'].astype('category')
+
+# Remove irrelevant columns
+columns_to_drop = ['Loud Cover', 'Daily Summary']
+df = df.drop(columns_to_drop, axis=1)
+
+# Display the cleaned dataset
 print(df.head())
