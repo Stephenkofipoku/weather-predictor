@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+import Pandas as pd
 
 # Set up credentials and authorize the Google Sheets API
 
@@ -19,5 +20,7 @@ weatherhistory = SHEET.worksheet('weatherhistory')
 
 # Read the data from the sheet into a Pandas DataFrame
 data = weatherhistory.get_all_records()
+df = pd.DataFrame(data)
 
-print(data)
+# Display the first few rows of the dataset
+print(df.head())
