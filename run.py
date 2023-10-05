@@ -90,3 +90,16 @@ def insert_image_into_spreadsheet(client, sheet_name, image_url, cell):
     """Insert an image into the specified cell in the Google Spreadsheet."""
     sheet = client.open('weatherpredictor').worksheet(sheet_name)
     sheet.update(cell, [[f'=IMAGE("{image_url}", 1)']])
+
+def main():
+    # Authorize Google Sheets API
+    gspread_client = authorize_google_sheets()
+
+    # Read data from the sheet into a Pandas DataFrame
+    df = read_data_from_sheet(gspread_client, 'weatherhistory')
+
+    # Handle missing values
+    df = handle_missing_values(df)
+
+    # Convert data types if necessary
+    df = convert
