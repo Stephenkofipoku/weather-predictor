@@ -56,19 +56,14 @@ def visualize_temperature_distribution(df):
     plt.ylabel('Count')
     plt.show()
 
-# Upload the temperature distribution image to Google Drive
-drive_service = build('drive', 'v3', credentials=SCOPED_CREDS)
-file_metadata = {
-    'name': 'temperature_distribution.png',
-    'parents': [SHEET.id]
-}
-media = MediaFileUpload('temperature_distribution.png', mimetype='image/png')
-uploaded_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-image_url = f"https://drive.google.com/uc?id={uploaded_file['id']}"
-
-# Insert the temperature distribution image into the Google Spreadsheet
-analyzed_sheet = SHEET.worksheet('analyzed')
-analyzed_sheet.update('A1', [[f'=IMAGE("{image_url}", 1)']])
+def visualize_temperature_vs_humidity(df):
+    """Visualize the relationship between temperature and humidity."""
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(data=df, x='Temperature (C)', y='Humidity')
+    plt.title('Temperature vs Humidity')
+    plt.xlabel('Temperature (C)')
+    plt.ylabel('Humidity')
+    plt.show()
 
 # Visualize the relationship between temperature and humidity
 plt.figure(figsize=(8, 6))
