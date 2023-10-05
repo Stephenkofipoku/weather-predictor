@@ -86,18 +86,7 @@ media = MediaFileUpload('temperature_vs_humidity.png', mimetype='image/png')
 uploaded_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 image_url = f"https://drive.google.com/uc?id={uploaded_file['id']}"
 
-# Insert the temperature vs. humidity image into the Google Spreadsheet
-analyzed_sheet.update('D1', [[f'=IMAGE("{image_url}", 1)']])
-
-# Print the plots in the terminal
-sns.histplot(data=df, x='Temperature (C)', bins=30)
-plt.title('Temperature Distribution')
-plt.xlabel('Temperature (C)')
-plt.ylabel('Count')
-plt.show()
-
-sns.scatterplot(data=df, x='Temperature (C)', y='Humidity')
-plt.title('Temperature vs Humidity')
-plt.xlabel('Temperature (C)')
-plt.ylabel('Humidity')
-plt.show()
+def insert_image_into_spreadsheet(client, sheet_name, image_url, cell):
+    """Insert an image into the specified cell in the Google Spreadsheet."""
+    sheet = client.open('weatherpredictor').worksheet(sheet_name)
+    sheet.update(cell, [[f'=IMAGE("{image_url}", 1)']])
