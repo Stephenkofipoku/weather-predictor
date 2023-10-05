@@ -29,6 +29,11 @@ def read_data_from_sheet(client, sheet_name):
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
     return df
+    
+def handle_missing_values(df):
+    """Handle missing values by removing rows with any missing values."""
+    df = df.dropna()
+    return df
 
 # Convert data types if necessary
 df['Temperature (C)'] = pd.to_numeric(df['Temperature (C)'])
