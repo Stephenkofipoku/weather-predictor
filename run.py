@@ -23,18 +23,12 @@ def authorize_google_sheets():
     gspread_client = gspread.authorize(scoped_creds)
     return gspread_client
 
-# Select the desired sheet within the spreadsheet
-weatherhistory = SHEET.worksheet('weatherhistory')
-
-# Read the data from the sheet into a Pandas DataFrame
-data = weatherhistory.get_all_records()
-df = pd.DataFrame(data)
-
-df = df.dropna()
-"""
-Handle missing values.
-Remove rows with any missing values
-"""
+def read_data_from_sheet(client, sheet_name):
+    """Read data from the specified sheet in the Google Spreadsheet."""
+    sheet = client.open('weatherpredictor').worksheet(sheet_name)
+    data = sheet.get_all_records()
+    df = pd.DataFrame(data)
+    return df
 
 # Convert data types if necessary
 df['Temperature (C)'] = pd.to_numeric(df['Temperature (C)'])
