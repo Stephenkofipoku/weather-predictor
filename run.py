@@ -71,3 +71,9 @@ plt.title('Temperature vs Humidity')
 plt.xlabel('Temperature (C)')
 plt.ylabel('Humidity')
 plt.show()
+
+# Convert the plot to a base64-encoded image
+buffer = BytesIO()
+plt.savefig(buffer, format='png')
+buffer.seek(0)
+image_base64 = base64.b64encode(buffer.getvalue()).decode()
