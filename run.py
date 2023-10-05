@@ -29,19 +29,24 @@ def read_data_from_sheet(client, sheet_name):
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
     return df
-    
+
 def handle_missing_values(df):
     """Handle missing values by removing rows with any missing values."""
     df = df.dropna()
     return df
 
-# Convert data types if necessary
-df['Temperature (C)'] = pd.to_numeric(df['Temperature (C)'])
-df['Precip Type'] = df['Precip Type'].astype('category')
+def convert_data_types(df):
+    """Convert data types if necessary."""
+    df['Temperature (C)'] = pd.to_numeric(df['Temperature (C)'])
+    df['Precip Type'] = df['Precip Type'].astype('category')
+    return df
 
-# Remove irrelevant columns
-columns_to_drop = ['Loud Cover', 'Daily Summary']
-df = df.drop(columns_to_drop, axis=1)
+def remove_irrelevant_columns(df):
+    """Remove irrelevant columns from the DataFrame."""
+    columns_to_drop = ['Loud Cover', 'Daily Summary']
+    df = df.drop(columns_to_drop, axis=1)
+    return df
+
 
 # Exporatory Data Analysis (EDA) on the dataset and gain insights into the dataset and relationships between variables.
 # Using libraries Matplotlib and Seaborn to create visualizations.
