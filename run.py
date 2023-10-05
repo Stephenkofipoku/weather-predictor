@@ -47,19 +47,14 @@ def remove_irrelevant_columns(df):
     df = df.drop(columns_to_drop, axis=1)
     return df
 
-
-# Exporatory Data Analysis (EDA) on the dataset and gain insights into the dataset and relationships between variables.
-# Using libraries Matplotlib and Seaborn to create visualizations.
-# Visualize the average temperature by month
-
-# Visualize the distribution of temperature.
-plt.figure(figsize=(8, 6))
-sns.histplot(data=df, x='Temperature (C)', bins=30)
-plt.title('Temperature Distribution')
-plt.xlabel('Temperature (C)')
-plt.ylabel('Count')
-plt.savefig('temperature_distribution.png')
-plt.close()
+def visualize_temperature_distribution(df):
+    """Visualize the distribution of temperature."""
+    plt.figure(figsize=(8, 6))
+    sns.histplot(data=df, x='Temperature (C)', bins=30)
+    plt.title('Temperature Distribution')
+    plt.xlabel('Temperature (C)')
+    plt.ylabel('Count')
+    plt.show()
 
 # Upload the temperature distribution image to Google Drive
 drive_service = build('drive', 'v3', credentials=SCOPED_CREDS)
