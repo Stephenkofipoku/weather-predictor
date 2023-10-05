@@ -3,8 +3,6 @@ from google.oauth2.service_account import Credentials
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import base64
-from io import BytesIO
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
@@ -14,7 +12,7 @@ SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
-    ]
+]
 
 def authorize_google_sheets():
     """Authorize and return the Google Sheets client."""
@@ -35,10 +33,10 @@ def handle_missing_values(df):
     df = df.dropna()
     return df
 
-def convert_data_types(df):
-    """Convert data types if necessary."""
-    df['Temperature (C)'] = pd.to_numeric(df['Temperature (C)'])
-    df['Precip Type'] = df['Precip Type'].astype('category')
+def convert(df):
+    """Perform necessary data conversions."""
+    df = handle_missing_values(df)
+    df = remove_irrelevant_columns(df)
     return df
 
 def remove_irrelevant_columns(df):
@@ -58,12 +56,23 @@ def visualize_temperature_distribution(df):
 
 def visualize_temperature_vs_humidity(df):
     """Visualize the relationship between temperature and humidity."""
-
     plt.figure(figsize=(8, 6))
     sns.scatterplot(data=df, x='Temperature (C)', y='Humidity')
     plt.title('Temperature vs Humidity')
     plt.xlabel('Temperature (C)')
     plt.ylabel('Humidity')
+    plt.show()
+
+def visualize_avg_temp_by_month(df):
+    """Visualize the average temperature by month."""
+    df['Month'] = pd.to_datetime(df['Date']).dt.month
+    avg_temp_by_month = df.groupby('Month')['Temperature (C)'].mean().reset_index()
+
+    plt.figure(figsize=(8, 6))
+    sns.barplot(data=avg_temp_by_month, x='Month', y='Temperature (C)')
+    plt.title('Average Temperature by Month')
+    plt.xlabel('Month')
+    plt.ylabel('Average Temperature (C)')
     plt.show()
 
 def upload_image_to_drive(file_path, folder_id):
@@ -75,16 +84,8 @@ def upload_image_to_drive(file_path, folder_id):
     }
     media = MediaFileUpload(file_path, mimetype='image/png')
     uploaded_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    return uploaded_file['id']
-
-# Upload the temperature vs. humidity image to Google Drive
-file_metadata = {
-    'name': 'temperature_vs_humidity.png',
-    'parents': [SHEET.id]
-}
-media = MediaFileUpload('temperature_vs_humidity.png', mimetype='image/png')
-uploaded_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-image_url = f"https://drive.google.com/uc?id={uploaded_file['id']}"
+    image_id = uploaded_file['id']
+    return image_id
 
 def insert_image_into_spreadsheet(client, sheet_name, image_url, cell):
     """Insert an image into the specified cell in the Google Spreadsheet."""
@@ -95,11 +96,28 @@ def main():
     # Authorize Google Sheets API
     gspread_client = authorize_google_sheets()
 
-    # Read data from the sheet into a Pandas DataFrame
+    # Read data from the 'weatherhistory' sheet into a Pandas DataFrame
     df = read_data_from_sheet(gspread_client, 'weatherhistory')
 
     # Handle missing values
     df = handle_missing_values(df)
 
     # Convert data types if necessary
-    df = convert
+    df = convert(df)
+
+    # Call the function to visualize the average temperature by month
+    visualize_avg_temp_by_month(df)
+
+    # Save the visualization as an image
+    plt.savefig('temperature_by_month.png')
+
+    # Upload the image to Google Drive
+    folder_id = '<folder_id>'  # Replace with the ID of the folder in Google Drive
+    image_id = upload_image_to_drive('temperature_by_month.png', folder_id)
+
+    # Insert the image into the 'analyzed' sheet of the 'weatherpredictor' spreadsheet
+    insert_image_into_spreadsheet(gspread_client, 'analyzed', image_id, 'A1')
+
+# Call the main function to execute the code
+if __name__ == "__main__":
+    main()
