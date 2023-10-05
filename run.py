@@ -58,6 +58,7 @@ def visualize_temperature_distribution(df):
 
 def visualize_temperature_vs_humidity(df):
     """Visualize the relationship between temperature and humidity."""
+
     plt.figure(figsize=(8, 6))
     sns.scatterplot(data=df, x='Temperature (C)', y='Humidity')
     plt.title('Temperature vs Humidity')
@@ -65,14 +66,16 @@ def visualize_temperature_vs_humidity(df):
     plt.ylabel('Humidity')
     plt.show()
 
-# Visualize the relationship between temperature and humidity
-plt.figure(figsize=(8, 6))
-sns.scatterplot(data=df, x='Temperature (C)', y='Humidity')
-plt.title('Temperature vs Humidity')
-plt.xlabel('Temperature (C)')
-plt.ylabel('Humidity')
-plt.savefig('temperature_vs_humidity.png')
-plt.close()
+def upload_image_to_drive(file_path, folder_id):
+    """Upload an image to Google Drive."""
+    drive_service = build('drive', 'v3', credentials=SCOPED_CREDS)
+    file_metadata = {
+        'name': file_path,
+        'parents': [folder_id]
+    }
+    media = MediaFileUpload(file_path, mimetype='image/png')
+    uploaded_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return uploaded_file['id']
 
 # Upload the temperature vs. humidity image to Google Drive
 file_metadata = {
