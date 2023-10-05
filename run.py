@@ -40,13 +40,11 @@ df['Precip Type'] = df['Precip Type'].astype('category')
 columns_to_drop = ['Loud Cover', 'Daily Summary']
 df = df.drop(columns_to_drop, axis=1)
 
-"""
-Exporatory Data Analysis (EDA) on the dataset and gain insights into the patterns and relationships between variables.
-Using libraries Matplotlib and Seaborn to create visualizations.
-Visualize the distribution of temperature.
-Visualize the relationship between temperature and humidity
-Visualize the average temperature by month
-"""
+# Exporatory Data Analysis (EDA) on the dataset and gain insights into the patterns and relationships between variables.
+# Using libraries Matplotlib and Seaborn to create visualizations.
+# Visualize the average temperature by month
+
+# Visualize the distribution of temperature.
 plt.figure(figsize=(8, 6))
 sns.histplot(data=df, x='Temperature (C)', bins=30)
 plt.title('Temperature Distribution')
@@ -66,4 +64,10 @@ analyzed_sheet.update([[f'=IMAGE("data:image/png;base64,{image_base64}", 1)']], 
 
 plt.close()
 
-
+# Visualize the relationship between temperature and humidity
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=df, x='Temperature (C)', y='Humidity')
+plt.title('Temperature vs Humidity')
+plt.xlabel('Temperature (C)')
+plt.ylabel('Humidity')
+plt.show()
