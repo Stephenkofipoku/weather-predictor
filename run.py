@@ -65,7 +65,8 @@ def visualize_temperature_vs_humidity(df):
 
 def visualize_avg_temp_by_month(df):
     """Visualize the average temperature by month."""
-    df['Month'] = pd.to_datetime(df['Date']).dt.month
+    df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d %H:%M', errors='coerce')
+    df['Month'] = df['Date'].dt.month
     avg_temp_by_month = df.groupby('Month')['Temperature (C)'].mean().reset_index()
 
     plt.figure(figsize=(8, 6))
@@ -75,9 +76,9 @@ def visualize_avg_temp_by_month(df):
     plt.ylabel('Average Temperature (C)')
     plt.show()
 
-def upload_image_to_drive(file_path, folder_id):
+def upload_image_to_drive(file_path, folder_id, credentials):
     """Upload an image to Google Drive."""
-    drive_service = build('drive', 'v3', credentials=SCOPED_CREDS)
+    drive_service = build('drive', 'v3', credentials=credentials)
     file_metadata = {
         'name': file_path,
         'parents': [folder_id]
@@ -112,8 +113,10 @@ def main():
     plt.savefig('temperature_by_month.png')
 
     # Upload the image to Google Drive
-    folder_id = '<folder_id>'  # Replace with the ID of the folder in Google Drive
-    image_id = upload_image_to_drive('temperature_by_month.png', folder_id)
+    folder_id = '<folder_id>' 
+    creds = Credentials.from_service_account_file('creds.json')
+    scoped_creds = creds.with_scopes(SCOPE)
+    image_id = upload_image_to_drive('temperature_by_month.png', folder_id, scoped_creds)
 
     # Insert the image into the 'analyzed' sheet of the 'weatherpredictor' spreadsheet
     insert_image_into_spreadsheet(gspread_client, 'analyzed', image_id, 'A1')
