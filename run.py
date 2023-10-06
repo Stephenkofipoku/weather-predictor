@@ -23,7 +23,7 @@ def authorize_google_sheets():
 
 def read_data_from_sheet(client, sheet_name):
     """Read data from the specified sheet in the Google Spreadsheet."""
-    sheet = client.open('weatherpredictor').worksheet('weatherhistory')
+    sheet = client.open('weatherpredictor').worksheet(sheet_name)
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
     return df
@@ -53,6 +53,7 @@ def visualize_temperature_distribution(df):
     plt.xlabel('Temperature (C)')
     plt.ylabel('Count')
     plt.show()
+    breakpoint()
 
 def visualize_temperature_vs_humidity(df):
     """Visualize the relationship between temperature and humidity."""
@@ -62,6 +63,7 @@ def visualize_temperature_vs_humidity(df):
     plt.xlabel('Temperature (C)')
     plt.ylabel('Humidity')
     plt.show()
+    breakpoint()
 
 def visualize_avg_temp_by_month(df):
     """Visualize the average temperature by month."""
@@ -75,6 +77,7 @@ def visualize_avg_temp_by_month(df):
     plt.xlabel('Month')
     plt.ylabel('Average Temperature (C)')
     plt.show()
+    breakpoint()
 
 def upload_image_to_drive(file_path, folder_id, credentials):
     """Upload an image to Google Drive."""
@@ -91,7 +94,7 @@ def upload_image_to_drive(file_path, folder_id, credentials):
 def insert_image_into_spreadsheet(client, sheet_name, image_url, cell):
     """Insert an image into the specified cell in the Google Spreadsheet."""
     sheet = client.open('weatherpredictor').worksheet('analyzed')
-    sheet.update(cell, [[f'=IMAGE("{image_url}", 1)']], value_input_option='USER_ENTERED')
+    sheet.update(cell, [[f'=IMAGE("{image_url}", 1)']])
 
 def main():
     # Authorize Google Sheets API
@@ -119,7 +122,7 @@ def main():
     plt.savefig('temperature_by_month.png')
 
     # Upload the image to Google Drive
-    folder_id = '16MULELlzRGqHKq8ZXUDdd-JrV1nziSeI' 
+    folder_id = '16MULELlzRGqHKq8ZXUDdd-JrV1nziSeI'
     creds = Credentials.from_service_account_file('creds.json')
     scoped_creds = creds.with_scopes(SCOPE)
     image_id = upload_image_to_drive('temperature_by_month.png', folder_id, scoped_creds)
