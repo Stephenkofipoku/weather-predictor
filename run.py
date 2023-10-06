@@ -23,7 +23,7 @@ def authorize_google_sheets():
 
 def read_data_from_sheet(client, sheet_name):
     """Read data from the specified sheet in the Google Spreadsheet."""
-    sheet = client.open('weatherpredictor').worksheet(sheet_name)
+    sheet = client.open('weatherpredictor').worksheet('weatherhistory')
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
     return df
@@ -90,8 +90,8 @@ def upload_image_to_drive(file_path, folder_id, credentials):
 
 def insert_image_into_spreadsheet(client, sheet_name, image_url, cell):
     """Insert an image into the specified cell in the Google Spreadsheet."""
-    sheet = client.open('weatherpredictor').worksheet(sheet_name)
-    sheet.update(cell, [[f'=IMAGE("{image_url}", 1)']])
+    sheet = client.open('weatherpredictor').worksheet('analyzed')
+    sheet.update(cell, [[f'=IMAGE("{image_url}", 1)']], value_input_option='USER_ENTERED')
 
 def main():
     # Authorize Google Sheets API
@@ -105,6 +105,12 @@ def main():
 
     # Convert data types if necessary
     df = convert(df)
+
+    # Call the function to visualize the temperature distribution
+    visualize_temperature_distribution(df)
+
+    # Call the function to visualize the temperature vs humidity
+    visualize_temperature_vs_humidity(df)
 
     # Call the function to visualize the average temperature by month
     visualize_avg_temp_by_month(df)
@@ -123,4 +129,5 @@ def main():
 
 # Call the main function to execute the code
 if __name__ == "__main__":
+    breakpoint()
     main()
