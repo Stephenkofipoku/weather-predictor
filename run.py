@@ -113,7 +113,7 @@ def main():
     plt.savefig('temperature_by_month.png')
 
     # Upload the image to Google Drive
-    folder_id = '<folder_id>' 
+    folder_id = '16MULELlzRGqHKq8ZXUDdd-JrV1nziSeI' 
     creds = Credentials.from_service_account_file('creds.json')
     scoped_creds = creds.with_scopes(SCOPE)
     image_id = upload_image_to_drive('temperature_by_month.png', folder_id, scoped_creds)
