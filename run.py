@@ -23,10 +23,15 @@ def authorize_google_sheets():
 
 def read_data_from_sheet(client, sheet_name):
     """Read data from the specified sheet in the Google Spreadsheet."""
-    sheet = client.open('weatherpredictor').worksheet(sheet_name)
+    sheet = client.open('weatherpredictor').worksheet('weatherhistory')
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
     return df
+
+def extract_features(df):
+    """Extract relevant features for weather prediction."""
+    features = df[['Date', 'Average Temperature', 'Minimum Temperature', 'Maximum Temperature', 'Average Humidity', 'Minimum Humidity', 'Maximum Humidity', 'Pressure']]
+    return features
 
 def handle_missing_values(df):
     """Handle missing values by removing rows with any missing values."""
