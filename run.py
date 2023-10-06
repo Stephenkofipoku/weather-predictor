@@ -42,6 +42,7 @@ def convert(df):
     """Perform necessary data conversions."""
     df = handle_missing_values(df)
     df = remove_irrelevant_columns(df)
+    df = extract_features(df)
     return df
 
 def remove_irrelevant_columns(df):
