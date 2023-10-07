@@ -3,6 +3,7 @@ from google.oauth2.service_account import Credentials
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
@@ -25,7 +26,7 @@ def authorize_google_sheets():
 
 def read_data_from_sheet(client, sheet_name):
     """Read data from the specified sheet in the Google Spreadsheet."""
-    sheet = client.open('weatherpredictor').worksheet('weatherhistory')
+    sheet = client.open('weatherpredictor').worksheet(sheet_name)
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
     return df
@@ -33,9 +34,7 @@ def read_data_from_sheet(client, sheet_name):
 
 def extract_features(df):
     """Extract relevant features for weather prediction."""
-    features = df[['Date', 'Average Temperature', 'Minimum Temperature',
-    'Maximum Temperature','Average Humidity', 'Minimum Humidity',
-    'Maximum Humidity', 'Pressure']]
+    features = df[['Datetime', 'Temperature','Humidity', 'Pressure']]
     return features
 
 
@@ -68,7 +67,6 @@ def visualize_temperature_distribution(df):
     plt.xlabel('Temperature (C)')
     plt.ylabel('Count')
     plt.show()
-    breakpoint()
 
 
 def visualize_temperature_vs_humidity(df):
@@ -79,22 +77,35 @@ def visualize_temperature_vs_humidity(df):
     plt.xlabel('Temperature (C)')
     plt.ylabel('Humidity')
     plt.show()
-    breakpoint()
 
 
 def visualize_avg_temp_by_month(df):
     """Visualize the average temperature by month."""
-    df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d %H:%M', errors='coerce')
+    df['Datetime'] = pd.to_datetime(df['Date'], format='%Y-%m-%d %H:%M', errors='coerce')
     df['Month'] = df['Date'].dt.month
     avg_temp_by_month = df.groupby('Month')['Temperature (C)'].mean().reset_index()
 
     plt.figure(figsize=(8, 6))
     sns.barplot(data=avg_temp_by_month, x='Month', y='Temperature (C)')
-    plt.title('Average Temperature by Month')
+    plt.title('AverageTemperature by Month')
     plt.xlabel('Month')
-    plt.ylabel('Average Temperature (C)')
+    plt.ylabel('AverageTemperature (C)')
     plt.show()
-    breakpoint()
+
+
+def apply_linear_regression(df):
+    """Apply Linear Regression to the weather prediction data."""
+    X = df[['AverageTemperature', 'MinTemperature', 'MaxTemperature', 'AverageHumidity',
+            'MinHumidity', 'MaxHumidity', 'Pressure']]
+    y = df['Temperature (C)']
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    # Print the coefficients
+    print("Coefficients:")
+    for feature, coef in zip(X.columns, model.coef_):
+        print(f"{feature}: {coef}")
 
 
 def upload_image_to_drive(file_path, folder_id, credentials):
@@ -138,6 +149,9 @@ def main():
     # Call the function to visualize the average temperature by month
     visualize_avg_temp_by_month(df)
 
+    # Apply Linear Regression to the weather prediction data
+    apply_linear_regression(df)
+
     # Save the visualization as an image
     plt.savefig('temperature_by_month.png')
 
@@ -153,5 +167,4 @@ def main():
 
 # Call the main function to execute the code
 if __name__ == "__main__":
-    breakpoint()
     main()
