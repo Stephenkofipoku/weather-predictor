@@ -14,12 +14,14 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive"
 ]
 
+
 def authorize_google_sheets():
     """Authorize and return the Google Sheets client."""
     creds = Credentials.from_service_account_file('creds.json')
     scoped_creds = creds.with_scopes(SCOPE)
     gspread_client = gspread.authorize(scoped_creds)
     return gspread_client
+
 
 def read_data_from_sheet(client, sheet_name):
     """Read data from the specified sheet in the Google Spreadsheet."""
@@ -28,15 +30,20 @@ def read_data_from_sheet(client, sheet_name):
     df = pd.DataFrame(data)
     return df
 
+
 def extract_features(df):
     """Extract relevant features for weather prediction."""
-    features = df[['Date', 'Average Temperature', 'Minimum Temperature', 'Maximum Temperature', 'Average Humidity', 'Minimum Humidity', 'Maximum Humidity', 'Pressure']]
+    features = df[['Date', 'Average Temperature', 'Minimum Temperature',
+    'Maximum Temperature','Average Humidity', 'Minimum Humidity',
+    'Maximum Humidity', 'Pressure']]
     return features
+
 
 def handle_missing_values(df):
     """Handle missing values by removing rows with any missing values."""
     df = df.dropna()
     return df
+
 
 def convert(df):
     """Perform necessary data conversions."""
@@ -45,11 +52,13 @@ def convert(df):
     df = extract_features(df)
     return df
 
+
 def remove_irrelevant_columns(df):
     """Remove irrelevant columns from the DataFrame."""
     columns_to_drop = ['Loud Cover', 'Daily Summary']
     df = df.drop(columns_to_drop, axis=1)
     return df
+
 
 def visualize_temperature_distribution(df):
     """Visualize the distribution of temperature."""
@@ -61,6 +70,7 @@ def visualize_temperature_distribution(df):
     plt.show()
     breakpoint()
 
+
 def visualize_temperature_vs_humidity(df):
     """Visualize the relationship between temperature and humidity."""
     plt.figure(figsize=(8, 6))
@@ -70,6 +80,7 @@ def visualize_temperature_vs_humidity(df):
     plt.ylabel('Humidity')
     plt.show()
     breakpoint()
+
 
 def visualize_avg_temp_by_month(df):
     """Visualize the average temperature by month."""
@@ -85,6 +96,7 @@ def visualize_avg_temp_by_month(df):
     plt.show()
     breakpoint()
 
+
 def upload_image_to_drive(file_path, folder_id, credentials):
     """Upload an image to Google Drive."""
     drive_service = build('drive', 'v3', credentials=credentials)
@@ -97,10 +109,12 @@ def upload_image_to_drive(file_path, folder_id, credentials):
     image_id = uploaded_file['id']
     return image_id
 
+
 def insert_image_into_spreadsheet(client, sheet_name, image_url, cell):
     """Insert an image into the specified cell in the Google Spreadsheet."""
     sheet = client.open('weatherpredictor').worksheet('analyzed')
     sheet.update(cell, [[f'=IMAGE("{image_url}", 1)']])
+
 
 def main():
     # Authorize Google Sheets API
@@ -135,6 +149,7 @@ def main():
 
     # Insert the image into the 'analyzed' sheet of the 'weatherpredictor' spreadsheet
     insert_image_into_spreadsheet(gspread_client, 'analyzed', image_id, 'A1')
+
 
 # Call the main function to execute the code
 if __name__ == "__main__":
