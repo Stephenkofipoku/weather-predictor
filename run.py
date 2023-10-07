@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
@@ -34,10 +36,11 @@ def read_data_from_sheet(client, sheet_name):
 
 
 def extract_features(df):
+
     """Extract relevant features for weather prediction."""
-    features = df[['Datetime', 'Temperature (C)','Humidity', 
-    'Apparent Temperature (C)', 'Wind Speed (km/h)', 
-    'Visibility (km)', 'Pressure (millibars)']]
+    features = df[['Datetime', 'Temperature (C)', 'Humidity',
+        'Apparent Temperature (C)', 'Wind Speed (km/h)',
+        'Visibility (km)', 'Pressure (millibars)']]
     return features
 
 
@@ -105,13 +108,19 @@ def apply_linear_regression(df):
         'Pressure']]
     y = df['Temperature (C)']
 
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
     model = LinearRegression()
-    model.fit(X, y)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
 
     # Print the coefficients
-    print("Coefficients:")
-    for feature, coef in zip(X.columns, model.coef_):
-        print(f"{feature}: {coef}")
+    print("Mean Squared Error:", mse)
+    print("R-squared:", r2)
 
 
 def upload_image_to_drive(file_path, folder_id, credentials):
