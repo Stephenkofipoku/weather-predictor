@@ -26,15 +26,18 @@ def authorize_google_sheets():
 
 def read_data_from_sheet(client, sheet_name):
     """Read data from the specified sheet in the Google Spreadsheet."""
-    sheet = client.open('weatherpredictor').worksheet(sheet_name)
+    sheet = client.open('weatherpredictor').worksheet('weatherhistory')
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
+    print(df.head())
     return df
 
 
 def extract_features(df):
     """Extract relevant features for weather prediction."""
-    features = df[['Datetime', 'Temperature','Humidity', 'Pressure']]
+    features = df[['Datetime', 'Temperature (C)','Humidity', 
+    'Apparent Temperature (C)', 'Wind Speed (km/h)', 
+    'Visibility (km)', 'Pressure (millibars)']]
     return features
 
 
@@ -49,6 +52,7 @@ def convert(df):
     df = handle_missing_values(df)
     df = remove_irrelevant_columns(df)
     df = extract_features(df)
+    print(df.head())
     return df
 
 
@@ -81,8 +85,8 @@ def visualize_temperature_vs_humidity(df):
 
 def visualize_avg_temp_by_month(df):
     """Visualize the average temperature by month."""
-    df['Datetime'] = pd.to_datetime(df['Date'], format='%Y-%m-%d %H:%M', errors='coerce')
-    df['Month'] = df['Date'].dt.month
+    df['Datetime'] = pd.to_datetime(df['Datetime'], format='%Y-%m-%d %H:%M', errors='coerce')
+    df['Month'] = df['Datetime'].dt.month
     avg_temp_by_month = df.groupby('Month')['Temperature (C)'].mean().reset_index()
 
     plt.figure(figsize=(8, 6))
@@ -95,8 +99,8 @@ def visualize_avg_temp_by_month(df):
 
 def apply_linear_regression(df):
     """Apply Linear Regression to the weather prediction data."""
-    X = df[['AverageTemperature', 'MinTemperature', 'MaxTemperature', 'AverageHumidity',
-            'MinHumidity', 'MaxHumidity', 'Pressure']]
+    X = df[['Apparent Temperature (C)', 'Humidity', 'Wind Speed (km/h)', 'Visibility (km)',
+        'Pressure']]
     y = df['Temperature (C)']
 
     model = LinearRegression()
@@ -133,12 +137,15 @@ def main():
 
     # Read data from the 'weatherhistory' sheet into a Pandas DataFrame
     df = read_data_from_sheet(gspread_client, 'weatherhistory')
+    print(df.head())
 
     # Handle missing values
     df = handle_missing_values(df)
+    print(df.head())
 
     # Convert data types if necessary
     df = convert(df)
+    print(df.head())
 
     # Call the function to visualize the temperature distribution
     visualize_temperature_distribution(df)
