@@ -122,6 +122,8 @@ def apply_linear_regression(df):
     print("Mean Squared Error:", mse)
     print("R-squared:", r2)
 
+    return model
+
 
 def upload_image_to_drive(file_path, folder_id, credentials):
     """Upload an image to Google Drive."""
@@ -168,7 +170,7 @@ def main():
     visualize_avg_temp_by_month(df)
 
     # Apply Linear Regression to the weather prediction data
-    apply_linear_regression(df)
+    model = apply_linear_regression(df)
 
     # Save the visualization as an image
     plt.savefig('temperature_by_month.png')
@@ -197,6 +199,13 @@ def main():
         'Visibility (km)': [visibility],
         'Pressure': [pressure]
     })
+
+    # Use the trained model to make weather predictions
+    predictions = model.predict(input_data)
+
+    # Display the weather predictions
+    print("Weather Prediction:")
+    print("Temperature (C):", predictions)
 
 
 # Call the main function to execute the code
