@@ -189,6 +189,15 @@ def main():
     visibility = float(input("Enter the visibility (km): "))
     pressure = float(input("Enter the pressure: "))
 
+    # Prepare the input data
+    input_data = pd.DataFrame({
+        'Apparent Temperature (C)': [apparent_temperature],
+        'Humidity': [humidity],
+        'Wind Speed (km/h)': [wind_speed],
+        'Visibility (km)': [visibility],
+        'Pressure': [pressure]
+    })
+
 
 # Call the main function to execute the code
 if __name__ == "__main__":
