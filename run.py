@@ -39,8 +39,8 @@ def extract_features(df):
 
     """Extract relevant features for weather prediction."""
     features = df[['Datetime', 'Temperature (C)', 'Humidity',
-        'Apparent Temperature (C)', 'Wind Speed (km/h)',
-        'Visibility (km)', 'Pressure (millibars)']]
+            'Apparent Temperature (C)', 'Wind Speed (km/h)',
+            'Visibility (km)', 'Pressure (millibars)']]
     return features
 
 
@@ -181,6 +181,13 @@ def main():
 
     # Insert the image into the 'analyzed' sheet of the 'weatherpredictor' spreadsheet
     insert_image_into_spreadsheet(gspread_client, 'analyzed', image_id, 'A1')
+
+    # Collect input features from the user or obtain real-time data
+    apparent_temperature = float(input("Enter the apparent temperature (C): "))
+    humidity = float(input("Enter the humidity: "))
+    wind_speed = float(input("Enter the wind speed (km/h): "))
+    visibility = float(input("Enter the visibility (km): "))
+    pressure = float(input("Enter the pressure: "))
 
 
 # Call the main function to execute the code
